@@ -3,7 +3,7 @@
   require_once("dao/ReviewDAO.php");
   require_once("dao/MovieDAO.php");
   $reviewDao = new ReviewDao($conn, $BASE_URL);
-  $topRatedMovies = $reviewDao->getTopRatedMovies();
+  
 
   // DAO dos filmes
   $movieDao = new MovieDAO($conn, $BASE_URL);
@@ -29,12 +29,26 @@
 
   $fictionScientificMovies   = $movieDao->getMoviesByCategory("Ficção Cientifica"); 
 
+  $top10Movies = $movieDao->getTop10Movies();
+
+
 
 
 ?>
   <div id="main-container" class="container-fluid">
 
-    
+    <!-- Os Filmes com as melhores Avaliações -->
+    <h2 class="section-title">Os melhores Filmes</h2>
+  <p class="section-description">Veja as críticas dos últimos filmes adicionados no MovieStar</p>
+  <div class="movies-container">
+  <?php foreach($top10Movies as $movie): ?>
+        <?php require("templates/movie_card.php"); ?>
+      <?php endforeach; ?>
+      <?php if(count($top10Movies) === 0): ?>
+        <p class="empty-list">Ainda não há filmes cadastrados!</p>
+      <?php endif; ?>  
+  </div>
+
 
 
 

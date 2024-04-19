@@ -1,11 +1,14 @@
 <?php
+ require_once("templates/header.php");
 
-if(!isset($movie->image) || empty($movie->image)) {
-    $movie->image = "movie_cover.jpg";
-}
+ // Verifica se usuário está autenticado
+ require_once("models/Movie.php");
+ require_once("dao/MovieDAO.php");
+ require_once("dao/ReviewDAO.php");
+ $movieDao = new MovieDAO($conn, $BASE_URL);
+ 
 
 ?>
-
 <div class="card movie-card">
   <div class="card-img-top" style="background-image: url('<?= $BASE_URL ?>img/movies/<?= $movie->image ?>')"></div>
   <div class="card-body">

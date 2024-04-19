@@ -66,7 +66,7 @@
         <span class="pipe"></span>
         <span><i class="fas fa-star"></i> <?= $movie->rating ?></span>
       </p>
-      <?php print_r($movie->trailer) ?> <!-- Por questão de erro no Xamp, optei por utilizar assim, ja que o IFRAME não esta liberado -->
+      <?php echo $movie->trailer ?> <!--  Posso utilizar o echo ou print_rPor questão de erro no Xamp,  optei por utilizar assim, ja que o IFRAME não esta liberado -->
       <iframe src="<?= $movie->trailer ?>" width="560" height="315" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
       <p><?= $movie->description ?></p>

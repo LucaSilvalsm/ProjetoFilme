@@ -30,6 +30,7 @@
       $movie->category = $data["category"];
       $movie->length = $data["length"];
       $movie->users_id = $data["users_id"];
+      
 
       // Recebe as ratings do filme
       $reviewDao = new ReviewDao($this->conn, $this->url);
@@ -222,16 +223,85 @@
     }
 
     public function destroy($id) {
+      try {
+          // Iniciar uma transação
+          $this->conn->beginTransaction();
+  
+          // Excluir todas as avaliações associadas ao filme
+          $reviewStmt = $this->conn->prepare("DELETE FROM reviews WHERE movies_id = :id");
+          $reviewStmt->bindParam(":id", $id);
+          $reviewStmt->execute();
+  
+          // Em seguida, excluir o filme
+          $movieStmt = $this->conn->prepare("DELETE FROM movies WHERE id = :id");
+          $movieStmt->bindParam(":id", $id);
+          $movieStmt->execute();
+  
+          // Commit da transação
+          $this->conn->commit();
+  
+          // Mensagem de sucesso por remover filme
+          $this->message->setMessage("Filme removido com sucesso!", "success", "dashboard.php");
+      } catch (PDOException $e) {
+          // Em caso de erro, desfazer a transação
+          $this->conn->rollback();
+  
+          // Tratar o erro ou lançar novamente para que ele seja capturado fora do método
+          throw $e;
+      }
+  }
+  
+  public function getTop10Movies() {
+    $top10Movies = [];
 
-      $stmt = $this->conn->prepare("DELETE FROM movies WHERE id = :id");
+    // Obter os filmes com classificação média superior a 8
+    $reviewDAO = new ReviewDAO($this->conn, $this->url);
+    $topRatedMoviesData = $reviewDAO->getTopRatedMovies();
 
-      $stmt->bindParam(":id", $id);
-
-      $stmt->execute();
-
-      // Mensagem de sucesso por remover filme
-      $this->message->setMessage("Filme removido com sucesso!", "success", "dashboard.php");
-
+    // Converter os dados em objetos Movie
+    $movieDAO = new MovieDAO($this->conn, $this->url);
+    foreach ($topRatedMoviesData as $movieData) {
+        // Verificar se a avaliação do filme é maior que 8
+        if ($movieData['rating'] > 8) {
+            $movie = $movieDAO->findById($movieData['movie_id']);
+            if ($movie) {
+                $movie->rating = $movieData['rating']; // Adiciona a classificação ao objeto Movie
+                $top10Movies[] = $movie;
+            }
+        }
     }
 
-  }
+    // Ordenar os filmes pelo rating em ordem decrescente
+    usort($top10Movies, function($a, $b) {
+        return $b->rating <=> $a->rating;
+    });
+
+    // Limitar a lista aos 10 melhores filmes avaliados
+    $top10Movies = array_slice($top10Movies, 0, 10);
+
+    return $top10Movies;
+}
+
+
+
+  
+
+}
+ 
+
+
+
+
+
+
+
+
+  
+
+
+
+      
+    
+
+
+

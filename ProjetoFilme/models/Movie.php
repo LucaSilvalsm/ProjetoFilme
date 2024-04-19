@@ -30,4 +30,8 @@
     public function update(Movie $movie);
     public function destroy($id);
 
+    public function getTop10Movies();
+    
+    
+
   }

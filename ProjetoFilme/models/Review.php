@@ -19,6 +19,8 @@
     public function getRatings($id);
 
     public function getTopRatedMovies($minRating = 8);
+
+
     
 
   }
